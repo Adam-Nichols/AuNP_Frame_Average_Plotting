@@ -7,8 +7,12 @@ from os import chdir
 
 # Settings #
 plot_radius = int(25)
-chdir(r"C:\MBN\Au135_12PEG8_Water_equil_frames")
-# (see line 90 for choice of atoms to plot)
+plot_atoms = ['Au', 'Water', 'PEG'] # selection of atoms below
+# Full atom list: ['Cr', 'NR', 'OR', 'SP', 'HCM', 'HNR', 'OT', 'HT', 'Au', 'Water', 'PEG']
+# Individual plot type list for fast copy/paste: ['Cr', 'NR', 'OR', 'SP', 'Au', 'Water']
+# Combined plot type list for fast copy/paste: ['Au', 'Water', 'PEG']
+chdir(r"C:\MBN\Au135_08PEG2_Water_equil_frames")
+
 
 read_files = glob.glob("*.xyz")
 file_count = len(read_files)
@@ -62,6 +66,7 @@ data["Shell"] = data["Shell"].apply(np.floor)
 data = data.astype({"Shell": int})
 
 density = pd.DataFrame()
+plot_radius += 1
 density["Radius"] = range(plot_radius)
 density["Volume"] = ((4/3)*math.pi*(density["Radius"]**3))-((4/3)*math.pi*((density["Radius"]-1)**3))
 density.set_index("Radius", inplace=True)
@@ -75,7 +80,7 @@ for i in range(plot_radius):
             series = data.loc[[f], ["Shell"]] == i
             count = int(series.Shell.value_counts()[1])
             density.at[i+1, f] = count*(1/file_count)
-        except Exception:
+        except:
             pass
 
 density["Water"] = (density["OT"] + density["HT"])*(1/3)
@@ -87,14 +92,13 @@ density.loc[1, "Au"] = 0
 density = density[:-1]
 density["Au"] = density["Au"]*(1/3)
 
-atom_types = ['Au', "PEG", 'Water']
-# full atome list: ['Cr', 'NR', 'OR', 'SP', 'HCM', 'HNR', 'OT', 'HT', 'Au', 'Water', 'PEG']
-
 for f in atom_types:
     density[f+"_rho"] = density[f]/density["Volume"]
 
+density.to_csv("Frame_Averaged_Densities.csv")
+
 x_data = range(len(density))
-for f in atom_types:
+for f in plot_atoms:
     y_data = density[f+"_rho"]
     if f == "Au":
         plt.plot(x_data, y_data, "-x", label=f+" (1/3)")
