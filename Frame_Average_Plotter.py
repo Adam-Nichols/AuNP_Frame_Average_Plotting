@@ -70,6 +70,7 @@ data = data.astype({"Shell": int})
 density = pd.DataFrame()
 plot_radius += 1
 density["Radius"] = range(plot_radius)
+density["Avg_Distance"] = density["Radius"]-0.5
 density["Volume"] = ((4/3)*math.pi*(density["Radius"]**3))-((4/3)*math.pi*((density["Radius"]-1)**3))
 density.set_index("Radius", inplace=True)
 
@@ -101,7 +102,10 @@ for f in atom_types:
     density[f+"_rho"] = density[f]/density["Volume"]
     density[f+"_rho"] = density[f+"_rho"]*1000
 
-x_data = range(len(density))
+density = density.iloc[1:]
+
+x_data = density["Avg_Distance"]
+
 for f in plot_atoms:
     y_data = density[f+"_rho"]
     if f == "Au":
