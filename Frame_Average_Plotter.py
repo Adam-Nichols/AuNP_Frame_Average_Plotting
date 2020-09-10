@@ -99,6 +99,7 @@ density["Au"] = density["Au"]*(1/3)
 
 for f in atom_types:
     density[f+"_rho"] = density[f]/density["Volume"]
+    density[f+"_rho"] = density[f+"_rho"]*1000
 
 x_data = range(len(density))
 for f in plot_atoms:
@@ -110,8 +111,8 @@ for f in plot_atoms:
     plt.legend()
 
 plt.xlabel("Radius (Angstroms)")
-plt.ylabel("Number Density")
-plt.hlines(0.0334, 0, len(density), colors="gray", linestyles="dashed")
+plt.ylabel("Number Density (nm-3)")
+plt.hlines(33.4, 0, len(density), colors="gray", linestyles="dashed")
 plt.show()
 
 density.rename(columns={"Au": "Au_(1/3)", "Au_rho": "Au_(1/3)_rho"})
